@@ -1,0 +1,6 @@
+ma.houssam.carservice.service.CarServiceTest#cars()V
+java.util.Arrays#asList([Ljava/lang/Object;)Ljava/util/List;
+==
+cars ma.houssam.carservice.service.CarService#cars()Ljava/util/List;
+get java.util.List#get(I)Ljava/lang/Object;
+size java.util.List#size()I

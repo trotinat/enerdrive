@@ -1,0 +1,16 @@
+
+bma.houssam.carservice.service.CarService#car(Ljava/lang/Long;)Lma/houssam/carservice/entities/Car;í
+á/C:/Mes etudes v2/Management de la qualit√©/Microservice-Eureka/car-service/src/main/java/ma/houssam/carservice/service/CarService.java ("1*Õ
+1 (©
+¶
+ (4
+%0.ma.houssam.carservice.repository.CarRepository"__id*^
+
+__unknown_file (B*@*
+(ma.houssam.carservice.service.CarService"
+clientRepository"
+ (:
+"": 
+ (
+idjava.lang.LongB,*
+(ma.houssam.carservice.service.CarServiceH

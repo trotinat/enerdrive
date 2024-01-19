@@ -1,0 +1,3 @@
+ma.houssam.carservice.controller.CarController#car(Ljava/lang/Long;)Lma/houssam/carservice/entities/Car;
+==
+car ma.houssam.carservice.service.CarService#car(Ljava/lang/Long;)Lma/houssam/carservice/entities/Car;

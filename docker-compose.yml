@@ -1,0 +1,122 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot" ]
+      interval: 10s
+      retries: 3
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+  eureka-server:
+    container_name: eureka-server
+    build:
+      context: ./eureka-server
+      dockerfile: DockerFile
+    ports:
+      - "8761:8762"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://eureka-server:8762/actuator/health"]
+      interval: 10s
+      retries: 3
+    networks:
+      - microservices-network
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ./apigateway
+      dockerfile: DockerFile
+    ports:
+      - "8888:8888"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - microservices-network
+  car-service:
+    container_name: car-service
+    build:
+      context: ./car-service
+      dockerfile: DockerFile
+    ports:
+      - "8090:8090"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/car_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      mysql:
+        condition: service_started
+  client-service:
+    container_name: client-service
+    build:
+      context: ./client-service
+      dockerfile: DockerFile
+    ports:
+      - "8999:8999"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/client_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      mysql:
+        condition: service_started
+  consumption-service:
+    container_name: consumption-service
+    build:
+      context: ./fuel-consumption
+      dockerfile: DockerFile
+    ports:
+      - "8083:8083"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/fuel_consumption_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      mysql:
+        condition: service_started
+  react-front:
+    container_name: react-front
+    build:
+      context: ./front/Ener-drive-front-end
+      dockerfile: DockerFile
+    ports:
+      - "3000:3000"
+    depends_on:
+      consumption-service:
+        condition: service_started
+      client-service:
+        condition: service_started
+      car-service:
+        condition: service_started
+      api-gateway:
+        condition: service_started
+
+networks:
+  microservices-network:
+    driver: bridge

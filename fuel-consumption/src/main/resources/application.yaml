@@ -1,0 +1,31 @@
+spring:
+  datasource:
+      url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/fuel_consumption_db?createDatabaseIfNotExist=true}   # Your MySQL database URL
+      username: ${SPRING_DATASOURCE_USERNAME:root}
+      password: ${SPRING_DATASOURCE_PASSWORD:123456}
+      driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+      hibernate:
+        ddl-auto: update
+  application:
+    name: CONSUMPTION-SERVICE
+  h2:
+    console:
+      enabled: true
+  cloud:
+    discovery:
+      enabled: true
+server:
+  port: 8083
+eureka:
+  client:
+    register-with-eureka: true
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8762/eureka}
+  instance:
+    prefer-ip-address: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
